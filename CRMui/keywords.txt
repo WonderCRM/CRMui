@@ -1,0 +1,59 @@
+#######################################
+# Syntax Coloring Map For Mail
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+CRMui				KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+var					KEYWORD2
+led					KEYWORD2
+led_conf			KEYWORD2
+led_use				KEYWORD2
+wifi_start			KEYWORD2
+wifi_page			KEYWORD2
+aliveData_tabl		KEYWORD2
+param				KEYWORD2
+time			KEYWORD2
+date			KEYWORD2
+datetime			KEYWORD2
+reboot				KEYWORD2
+reset_cfg			KEYWORD2
+btnCallback		KEYWORD2
+app_name			KEYWORD2
+menu				KEYWORD2
+page				KEYWORD2
+text				KEYWORD2
+password			KEYWORD2
+number			KEYWORD2
+time_work			KEYWORD2
+email				KEYWORD2
+range				KEYWORD2
+select				KEYWORD2
+option				KEYWORD2
+checkbox			KEYWORD2
+color				KEYWORD2
+button				KEYWORD2
+textarea			KEYWORD2
+alive_tabl			KEYWORD2
+hr					KEYWORD2
+br					KEYWORD2
+ui					KEYWORD2
+getRequest	KEYWORD2
+aliveArray			KEYWORD2
+param_get				KEYWORD2
+getResponse			KEYWORD2
+
+
+
+
+
+
+
+
