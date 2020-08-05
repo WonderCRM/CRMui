@@ -86,6 +86,7 @@ handle();
 ```
 необходимо для нормального функционирования WebFramework
 
+* Обработчик кнопок в Web
 ```
 btnCallback(String name , String response); name - ID кнопки, response - имя вызываемой функции
 ```
