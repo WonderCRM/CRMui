@@ -1,5 +1,5 @@
 ﻿# CRMui WebFramework для esp8266
-![PROJECT_PHOTO](https://github.com/WonderCRM/CRMui/blob/master/screen.png)
+![PROJECT_PHOTO](https://github.com/WonderCRM/CRMui/blob/master/screenshot.png)
 
 
 ## Описание проекта
