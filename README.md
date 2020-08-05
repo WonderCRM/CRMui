@@ -79,118 +79,203 @@ aliveArray(adata); adata - название функции
 ```begin();```
 
 ### loop()
-```handle();```
+```
+handle();
+```
 необходимо для нормального функционирования WebFramework
-```btnCallback(String name , String response);``` name - ID кнопки, response - имя вызываемой функции
+
+```
+btnCallback(String name , String response); name - ID кнопки, response - имя вызываемой функции
+```
 имя вызываемой функции любое
 
 ### interface()
 * Название устройства
-```app_name(String name);``` name - название
+```
+app_name(String name); name - название
+```
 также отображается в меню
  
 * Пункты меню и разделы
-```menu(String name);``` name - название пункта меню
-```page();``` - отделение разделов друг от друга
+```
+menu(String name); name - название пункта меню
+```
+```
+page();
+```
+отделение разделов друг от друга
 
 * Поле для динамических данных
-```alive_tabl(String id, String label);``` id - ID элемента, label - название
-```alive_tabl(String id, String label, String value);``` id - ID элемента, label - название, value - значение по умолчанию
+```
+alive_tabl(String id, String label); id - ID элемента, label - название
+```
+```
+alive_tabl(String id, String label, String value); id - ID элемента, label - название, value - значение по умолчанию
+```
 поля элементов в виде таблицы
 
 * Поле для ввода текста
-```text(String id, String label);``` id - ID элемента, label - название
+```
+text(String id, String label); id - ID элемента, label - название
+```
 
 * Поле ввода пароля
-```password(String id, String label);``` id - ID элемента, label - название
+```
+password(String id, String label); id - ID элемента, label - название
+```
 значение скрыто точками
 
 * Поле ввода цифр
-```number(String id, String label);``` id - ID элемента, label - название
+```
+number(String id, String label); id - ID элемента, label - название
+```
 
 * Поля ввода времени и даты
-```time(String id, String label);``` id - ID элемента, label - название
-```date(String id, String label);``` id - ID элемента, label - название
-```datetime(String id, String label);``` id - ID элемента, label - название
+```
+time(String id, String label); id - ID элемента, label - название
+```
+```
+date(String id, String label); id - ID элемента, label - название
+```
+```
+datetime(String id, String label); id - ID элемента, label - название
+```
 
 * Поле ввода email адреса
-```email(String id, String label);``` id - ID элемента, label - название
+```
+email(String id, String label); id - ID элемента, label - название
+```
 
 * Элемент ползунок
-```range(String id, int min, int max, float step, String label);```  - тип значений String, int, int, float, String
-id - ID элемента, min - значение от, max - значение до, step - шаг (десятичные) ,label - название
-```range(String id, int min, int max, float step, String label, String units);``` id - ID элемента, min - значение от, max - значение до, step - шаг ,label - название, units - размерность
+```
+range(String id, int min, int max, float step, String label); id - ID элемента, min - значение от, max - значение до, step - шаг (десятичные) ,label - название
+```
+```
+range(String id, int min, int max, float step, String label, String units); id - ID элемента, min - значение от, max - значение до, step - шаг ,label - название, units - размерность
+```
 шаг может быть десятичным, размерность - указывается размерность значения, не обязательный параметр
 
 * Элемент список
-```option(String label, String value);``` label - название, value - значение
+```
+option(String label, String value); label - название, value - значение
+```
 массив списка, закрывается select
-```select(String id, String label);``` id - ID элемента, label - название
+
+
+```
+select(String id, String label); id - ID элемента, label - название
+```
 элементы закрывающий список, находится после всех option
 
 * Элемент переключатель
-```checkbox(String id, String label);``` id - ID элемента, label - название
+```
+checkbox(String id, String label); id - ID элемента, label - название
+```
 возвращает строку true или false
 
 
 * Элемент выбора цвета
-```color(String id, String label);``` id - ID элемента, label - название
+```
+color(String id, String label); id - ID элемента, label - название
+```
 возвращает строку  формата #XXXXXX
 
 * Кнопка
-```button(String id, String label);``` id - ID элемента, label - название
-```button(String id, String label, bool newline);``` id - ID элемента, label - название, newline - перевод на новую строку
+```
+button(String id, String label); id - ID элемента, label - название
+```
+```
+button(String id, String label, bool newline); id - ID элемента, label - название, newline - перевод на новую строку
+```
 перевод на новую строку, если не задано, то true
 
 * Поле ввода многострочного текста
-```textarea(String id, String label);``` id - ID элемента, label - название
+```
+textarea(String id, String label); id - ID элемента, label - название
+```
 много лучше не вводить, его значение, как и значение остальных элементов хранится в ОЗУ
 
 * Элементы разделения
-```hr();```
+```
+hr();
+```
 горизонтальная полоса
-```br();```
+
+```
+br();
+```
 строчный интервал
-```br(String size);```
+
+```
+br(String size); size - размер в px
+```
 интервал с размером в пикселях, но не менее строки
 
 *Страница настроек WiFi 
-```wifi_page();```
+```
+wifi_page();
+```
 
 ### Динамические данные (aliveArray)
 
 * Обновление динамических данных в WEB 
-```aliveData_tabl (id, value);``` - тип значений String, String
-```aliveData_tabl (id, value, rgb);``` - тип значений String, String, String
-id - ID элемента alive_tabl, value - название элемента, rgb - цвет, если не указан, то белый (формат: XXXXXX или XXX)
+```
+aliveData_tabl (String id, String value); id - ID элемента alive_tabl, value - название элемента
+```
+```
+aliveData_tabl (String id, String value, String rgb); id - ID элемента alive_tabl, value - название элемента, rgb - цвет 
+```
+если цвет не указан, то белый, (формат RGB HEX: XXXXXX или XXX)
 
 ### Остальные методы
 Следующие методы используются в любой функции
 
 * Режим работы LED индикатора
-```led(wmode);``` - находится в loop();
-wmode - режим работы, 0 - ВЫКЛ, 1 - ВКЛ, 10 - быстро мигать (300 мс), любое другое значение отображает режим работы (2е мигание - STA, 3е мигание - AP)
+```
+led(wmode); wmode - режим работы
+```
+режимы работы: 0 - ВЫКЛ, 1 - ВКЛ, 10 - быстро мигать (300 мс), любое другое значение отображает режим работы (2е мигание - STA, 3е мигание - AP)
 
 * Использовать LED индикатор (совместно с led_conf)
-```led_use(bool use);```
+```
+led_use(bool use);
+```
 use - что то вроде ВКЛ / ВЫКЛ, тип bool (true / false)
 
 * Метод возвращает строку со временем работы устройства
-```time_work();``` - тип возвращаемого значения String
+```
+time_work();
+```
+тип возвращаемого значения String
 
 * Получить значение параметра по его ключу
-```param(key);``` - тип возвращаемого значения String
+```
+param(key);
+```
+тип возвращаемого значения String
 
 * Получить значение параметра GET запроса по его ключу
- ```param_get(String key);``` - тип возвращаемого значения String
+ ```
+ param_get(String key);
+ ```
+ тип возвращаемого значения String
  
  * Сообщение ответа в WEB на GET запрос
-```getResponse(resp);``` - тип возвращаемого значения String
-resp - строка ответа
+```
+getResponse(resp); resp - строка ответа
+```
+тип возвращаемого значения String
+
 
 * Системные методы
-```reboot();``` - перезагрузка модуля
-```reset_cfg();``` - сброс настроек и удаление файла с конфигурацией из энергонезависимой памяти
+```
+reboot();
+```
+перезагрузка модуля
+```
+reset_cfg();
+```
+сброс настроек и удаление файла с конфигурацией из энергонезависимой памяти
 
 ## FAQ
 ### Основные вопросы
