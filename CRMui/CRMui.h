@@ -29,6 +29,7 @@ class CRMui {
     String time_work();
     String param(String key);
     String param_get(String key);
+    void getResponse(String resp);
     void getResponse(String resp, bool torus);
     void reboot();
     void reset_cfg();
