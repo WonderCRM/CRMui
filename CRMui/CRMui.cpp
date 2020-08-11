@@ -43,6 +43,9 @@ String CRMui::param_get(String key) {
 }
 
 
+void CRMui::getResponse(String resp) {
+  _getResponse = resp;
+}
 void CRMui::getResponse(String resp, bool torus) {
   if(torus) _getResponse = utf8rus(resp);
   else _getResponse = resp;
