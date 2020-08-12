@@ -31,6 +31,7 @@ class CRMui {
     String param_get(String key);
     void getResponse(String resp);
     void getResponse(String resp, bool torus);
+    String utf_to_rus(String source);
     void reboot();
     void reset_cfg();
     void begin();
