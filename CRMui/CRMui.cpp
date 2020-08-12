@@ -1,5 +1,4 @@
 #include "CRMui.h"
-#include "utf8rus.h"
 #define CRMui_VER "2.0.0611a"
 
 
@@ -42,12 +41,11 @@ String CRMui::param_get(String key) {
   return InComingData[key];
 }
 
-
 void CRMui::getResponse(String resp) {
   _getResponse = resp;
 }
 void CRMui::getResponse(String resp, bool torus) {
-  if(torus) _getResponse = utf8rus(resp);
+  if(torus) _getResponse = utf_to_rus(resp);
   else _getResponse = resp;
 }
 
