@@ -101,6 +101,8 @@ class CRMui {
     byte PIN_LED, LedFlashNum;
     bool inv, useled;
     uint32_t LongIntTimer, ShortIntTimer, BlinkTimer;
+    
+    bool needReboot;
 };
 
 #endif
