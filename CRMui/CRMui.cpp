@@ -194,7 +194,9 @@ void CRMui::begin() {
   }, [](AsyncWebServerRequest * request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
     if (!index) {
       Serial.println(String(F("Обновление запущено. Ожидайте завершения около минуты.\nФайл прошивки: ")) + filename);
+      #ifndef ESP32
       Update.runAsync(true);
+      #endif
       if (!Update.begin((ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000)) Update.printError(Serial);
     }
     if (!Update.hasError() && Update.write(data, len) != len) Update.printError(Serial);
