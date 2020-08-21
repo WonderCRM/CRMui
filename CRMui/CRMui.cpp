@@ -41,11 +41,12 @@ String CRMui::param_get(String key) {
   return InComingData[key];
 }
 
+
 void CRMui::getResponse(String resp) {
   _getResponse = resp;
 }
 void CRMui::getResponse(String resp, bool torus) {
-  if(torus) _getResponse = utf_to_rus(resp);
+  if (torus) _getResponse = utf_to_rus(resp);
   else _getResponse = resp;
 }
 
@@ -191,12 +192,12 @@ void CRMui::begin() {
     AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", !Update.hasError() ? "UPDATE SUCCESS!" : "UPDATE FAILED!");
     response->addHeader(F("Connection"), F("close"));
     request->send(response);
-    }, [this](AsyncWebServerRequest * request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+  }, [this](AsyncWebServerRequest * request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
     if (!index) {
       Serial.println(String(F("Обновление запущено. Пожалуйста ожидайте завершения...\nФайл прошивки: ")) + filename);
-    #ifndef ESP32
+#ifndef ESP32
       Update.runAsync(true);
-    #endif
+#endif
       if (!Update.begin((ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000)) Update.printError(Serial);
     }
     if (!Update.hasError() && Update.write(data, len) != len) Update.printError(Serial);
