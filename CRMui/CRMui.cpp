@@ -1,5 +1,5 @@
 #include "CRMui.h"
-#define CRMui_VER "2.0.0611a"
+#define CRMui_VER "2.0.0821a"
 
 
 #include "web/page.html.h"
@@ -188,23 +188,22 @@ void CRMui::begin() {
   });
 
   server.on("/update", HTTP_POST, [](AsyncWebServerRequest * request) {
-    AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", !Update.hasError() ? "OK" : "FAIL");
+    AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", !Update.hasError() ? "UPDATE SUCCESS!" : "UPDATE FAILED!");
     response->addHeader(F("Connection"), F("close"));
     request->send(response);
-  }, [](AsyncWebServerRequest * request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+    }, [this](AsyncWebServerRequest * request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
     if (!index) {
-      Serial.println(String(F("Обновление запущено. Ожидайте завершения около минуты.\nФайл прошивки: ")) + filename);
-      #ifndef ESP32
+      Serial.println(String(F("Обновление запущено. Пожалуйста ожидайте завершения...\nФайл прошивки: ")) + filename);
+    #ifndef ESP32
       Update.runAsync(true);
-      #endif
+    #endif
       if (!Update.begin((ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000)) Update.printError(Serial);
     }
     if (!Update.hasError() && Update.write(data, len) != len) Update.printError(Serial);
     if (final) {
       if (Update.end(true)) {
         Serial.println(F("Обновление завершено удачно, ESP перезагружается!"));
-        delay(200);
-        ESP.restart();
+        needReboot = true;
       } else Update.printError(Serial);
     }
   });
@@ -234,6 +233,7 @@ void CRMui::handle() {
     UpTime_Timer = millis();
     UpTime++;
     autosave();
+    if (needReboot) reboot();
   }
 }
 
