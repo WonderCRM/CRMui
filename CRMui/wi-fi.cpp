@@ -10,7 +10,11 @@ void CRMui::wifi_ap() {
 
 void CRMui::wifi_start() {
   if (param(F("mWiFi")) == F("STA")) {
+#ifdef ESP8266
     if (WiFi.getPersistent() == true) WiFi.persistent(false);
+#else
+	WiFi.persistent(false);
+#endif
     WiFi.mode(WIFI_STA);
     WiFi.persistent(true);
     Serial.println(String(F("\nПодключение к WiFi: ")) + param(F("SSID")));
@@ -43,7 +47,11 @@ void CRMui::wifi_start() {
     }
 
   } else  {
+#ifdef ESP8266
     if (WiFi.getPersistent() == true) WiFi.persistent(false);
+#else
+	WiFi.persistent(false);
+#endif
     WiFi.mode(WIFI_AP);
     WiFi.persistent(true);
     wifi_ap();
