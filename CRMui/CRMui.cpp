@@ -1,5 +1,5 @@
 #include "CRMui.h"
-#define CRMui_VER "2.0.0821a"
+#define CRMui_VER "2.0.0831a"
 
 
 #include "web/page.html.h"
