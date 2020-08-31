@@ -1,4 +1,4 @@
-﻿# CRMui WebFramework для esp8266
+﻿# CRMui WebFramework для esp8266 и esp32
 ![PROJECT_PHOTO](https://github.com/WonderCRM/CRMui/blob/master/screenshot.png)
 
 
