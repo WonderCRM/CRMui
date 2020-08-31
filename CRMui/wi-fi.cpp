@@ -5,19 +5,22 @@ void CRMui::wifi_ap() {
   Serial.println(String(F("\nЗапуск Wi-Fi в режиме AP: ")) + param(F("AP_SSID")));
   WiFi.softAP(param(F("AP_SSID")).c_str(), param(F("AP_Pass")).c_str());
   wifimode = true;
- }
+}
 
 
 void CRMui::wifi_start() {
-  if (param(F("mWiFi")) == F("STA")) {
-#ifdef ESP8266
-    if (WiFi.getPersistent() == true) WiFi.persistent(false);
-#else
-	WiFi.persistent(false);
-#endif
-    WiFi.mode(WIFI_STA);
-    WiFi.persistent(true);
-    Serial.println(String(F("\nПодключение к WiFi: ")) + param(F("SSID")));
+  WiFi.persistent(false);
+  String wfm = param(F("mWiFi"));
+  if (wfm == F("STA") || wfm == F("AP_STA")) {
+    if (wfm == F("AP_STA")) {
+      WiFi.softAP(param(F("AP_SSID")).c_str(), param(F("AP_Pass")).c_str());
+      WiFi.mode(WIFI_AP_STA);
+      Serial.println(String(F("\nЗапуск WiFi в режиме AP: ")) + param(F("AP_SSID")) + F("\nIP адрес AP: ") + WiFi.softAPIP().toString());
+      Serial.println(String(F("\nПодключение к: ")) + param(F("SSID")));
+    } else {
+      WiFi.mode(WIFI_STA);
+      Serial.println(String(F("\nПодключение к WiFi: ")) + param(F("SSID")));
+    }
     WiFi.begin(param(F("SSID")).c_str(), param(F("Pass")).c_str());
 
     uint32_t connTimer, WTCon = millis() + param(F("WTCon")).toInt() * 1000;
@@ -35,10 +38,7 @@ void CRMui::wifi_start() {
           break;
         }
         if (millis() > WTCon) {
-          WiFi.persistent(false);
           WiFi.mode(WIFI_OFF);
-          delay(100);
-          WiFi.persistent(true);
           wifi_ap();
           break;
         }
@@ -47,13 +47,7 @@ void CRMui::wifi_start() {
     }
 
   } else  {
-#ifdef ESP8266
-    if (WiFi.getPersistent() == true) WiFi.persistent(false);
-#else
-	WiFi.persistent(false);
-#endif
     WiFi.mode(WIFI_AP);
-    WiFi.persistent(true);
     wifi_ap();
   }
 }
@@ -62,6 +56,7 @@ void CRMui::wifi_start() {
 void CRMui::wifi_page() {
   option(F("Клиент"), F("STA"));
   option(F("Точка доступа"), F("AP"));
+  option(F("Точка доступа + Клиент"), F("AP_STA"));
   select(F("mWiFi"), F("Режим работы WiFi"));
   range(F("WTCon"), 10, 600, 1, F("Ожидать подключения не более"), F("сек."));
   text(F("SSID"), F("Название сети"));
