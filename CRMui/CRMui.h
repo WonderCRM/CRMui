@@ -5,8 +5,11 @@
 #include <ESPAsyncWebServer.h>
 #include "ArduinoOTA.h"
 
-#ifdef ESP32
+#ifdef ESP8266
+#include <ESP8266WiFiMulti.h>
+#else
 #include "SPIFFS.h"
+#include <WiFiMulti.h>
 #endif
 
 
@@ -21,8 +24,7 @@ class CRMui {
     void var(String key, String value);
     void led_conf(byte pin, bool vol, bool inversion);
     void led_use(bool use);
-    void led(byte wmode);
-    void wifi_start();
+    void led(int wmode);
     void wifi_page();
     void aliveData_tabl (String id, String value);
     void aliveData_tabl (String id, String value, String rgb);
@@ -66,7 +68,7 @@ class CRMui {
 
     uiCallback InterfaceElem;
     void ui(void (*uiFunction) ());
-    
+
     getCallback getPayload;
     void getRequest(void (*getFunction) ());
 
@@ -78,6 +80,8 @@ class CRMui {
 
   private:
     void wifi_ap();
+    void wifi_start();
+    void wifi_check();
     void nonWifiVar();
     void load_cfg();
     void save_cfg();
@@ -88,21 +92,21 @@ class CRMui {
     String _getResponse;        //Response for GET
     String buf_alive;           //Callback alive
 
-    bool wifimode = false;
+    bool wifiAPmode, wifiCheckConnect;
     bool AutoSaveSt = false;
-    uint32_t AutoSaveTimer;
+    uint32_t AutoSaveTimer, WTConTimer;
     StaticJsonDocument<4096> cfg;
     String op = "";
     uint8_t mn, pg;
     String btnui = "";
-    uint32_t UpTime_Timer, UpTime;
+    uint32_t mainTimer, UpTime;
+    bool needReboot;
 
     //LED
     byte PIN_LED, LedFlashNum;
     bool inv, useled;
     uint32_t LongIntTimer, ShortIntTimer, BlinkTimer;
-    
-    bool needReboot;
+
 };
 
 #endif
