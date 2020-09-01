@@ -16,7 +16,6 @@ var					KEYWORD2
 led					KEYWORD2
 led_conf			KEYWORD2
 led_use				KEYWORD2
-wifi_start			KEYWORD2
 wifi_page			KEYWORD2
 aliveData_tabl		KEYWORD2
 param				KEYWORD2
@@ -49,11 +48,3 @@ getRequest	KEYWORD2
 aliveArray			KEYWORD2
 param_get				KEYWORD2
 getResponse			KEYWORD2
-
-
-
-
-
-
-
-
