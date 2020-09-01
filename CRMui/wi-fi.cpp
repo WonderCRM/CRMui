@@ -1,7 +1,10 @@
 #include "CRMui.h"
 
+#ifdef ESP8266
 ESP8266WiFiMulti wifiMulti;
-
+#else
+WiFiMulti wifiMulti;
+#endif
 
 
 void CRMui::wifi_ap() {
