@@ -15,39 +15,34 @@ void CRMui::led_use(bool use) {
 }
 
 
-void CRMui::led(byte wmode) {
+void CRMui::led(int wmode) {
   if (useled) {
 
-    switch (wmode) {
-      case 0:
-        digitalWrite(PIN_LED, (inv ? HIGH : LOW));
-        break;
-        
-      case 1:
-        digitalWrite(PIN_LED, (inv ? LOW : HIGH));
-        break;
-        
-      case 10: {
-          if (millis() - BlinkTimer >= 300) {
-            BlinkTimer = millis();
-            digitalWrite(PIN_LED, !digitalRead(PIN_LED));
+    if (wmode < 0) {
+      if (millis() - LongIntTimer >= 10000) {
+        if (millis() - ShortIntTimer >= 100) {
+          ShortIntTimer = millis();
+          digitalWrite(PIN_LED, !digitalRead(PIN_LED));
+          LedFlashNum++;
+          if (LedFlashNum > (wifiAPmode ? 7 : 3)) {
+            LongIntTimer = millis();
+            LedFlashNum = 0;
           }
         }
-        break;
-        
-      default: {
-          if (millis() - LongIntTimer >= 10000) {
-            if (millis() - ShortIntTimer >= 70) {
-              ShortIntTimer = millis();
-              digitalWrite(PIN_LED, !digitalRead(PIN_LED));
-              LedFlashNum++;
-              if (LedFlashNum > (wifimode ? 7 : 3)) {
-                LongIntTimer = millis();
-                LedFlashNum = 0;
-              }
-            }
-          }
+      }
+    }
+
+    else
+
+    {
+      if (wmode == 0) digitalWrite(PIN_LED, (inv ? HIGH : LOW));
+      else if (wmode == 1) digitalWrite(PIN_LED, (inv ? LOW : HIGH));
+      else if (wmode > 1) {
+        if (millis() - BlinkTimer >= wmode) {
+          BlinkTimer = millis();
+          digitalWrite(PIN_LED, !digitalRead(PIN_LED));
         }
+      }
     }
 
   }
