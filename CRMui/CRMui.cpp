@@ -1,5 +1,5 @@
 #include "CRMui.h"
-#define CRMui_VER "2.0.0831a"
+#define CRMui_VER "2.0.0901a"
 
 
 #include "web/page.html.h"
@@ -86,15 +86,15 @@ String CRMui::time_work() {
 
 void CRMui::begin() {
   Serial.println(String(F("\nCRMui WebFramework ver:")) + String(CRMui_VER));
+  
   SPIFFS.begin();
   nonWifiVar();
   load_cfg();
+  wifi_start();
 
   String config;
   serializeJson(cfg, config);
-  Serial.println(String(F("CONFIG: ")) + config);
-
-  wifi_start();
+  Serial.println(String(F("\nCONFIG: ")) + config);
 
   server.on("/post", HTTP_POST, [this](AsyncWebServerRequest * request) {
     uint8_t params = request->params();
@@ -228,12 +228,13 @@ void CRMui::begin() {
 void CRMui::handle() {
   ArduinoOTA.handle();
 
-  led(50);
+  wifiCheckConnect ? led(100) : led(-1);
 
-  if (millis() - UpTime_Timer >= 1000) {
-    UpTime_Timer = millis();
+  if (millis() - mainTimer >= 1000) {
+    mainTimer = millis();
     UpTime++;
     autosave();
+    wifi_check();
     if (needReboot) reboot();
   }
 }
