@@ -77,10 +77,6 @@ void CRMui::datetime(String id, String label) {
   buf += F("},");
 }
 
-void CRMui::range(String id, int min, int max, float step, String label) {
-  range(id, min, max, step, label, "");
-}
-
 void CRMui::range(String id, int min, int max, float step, String label, String units) {
   buf += F("{\"html\":\"input\",");
   buf += String(F("\"id\":\"")) + id + F("\",");
@@ -146,10 +142,6 @@ void CRMui::color(String id, String label) {
   buf += F("},");
 }
 
-void CRMui::button(String id, String label) {
-  button(id, label, true);
-}
-
 void CRMui::button(String id, String label, bool newline) {
   buf += F("{\"html\":\"button\",");
   buf += String(F("\"id\":\"")) + id + F("\",");
@@ -166,20 +158,12 @@ void CRMui::textarea(String id, String label) {
   buf += F("},");
 }
 
-void CRMui::alive_tabl(String id, String label) {
-  alive_tabl(id, label, "");
-}
-
 void CRMui::alive_tabl(String id, String label, String value) {
   buf += F("{\"html\":\"alive_tabl\",");
   buf += String(F("\"id\":\"")) + id + F("\",");
   buf += String(F("\"value\":\"")) + value + F("\",");
   buf += String(F("\"label\":\"")) + label + F("\"");
   buf += F("},");
-}
-
-void CRMui::br() {
-  br("");
 }
 
 void CRMui::br(String size) {
