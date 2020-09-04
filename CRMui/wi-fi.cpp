@@ -8,27 +8,10 @@ WiFiMulti wifiMulti;
 
 
 void CRMui::wifi_ap() {
-  //WiFi.mode(WIFI_OFF);
   WiFi.mode(WIFI_AP);
   WiFi.softAP(param(F("AP_SSID")).c_str(), param(F("AP_Pass")).c_str());
-  wifiCheckConnect = false;
   wifiAPmode = true;
-  led(0);
-  Serial.println(String(F("\nЗапуск WiFi в режиме AP: ")) + param(F("AP_SSID")) + F("\nIP адрес AP: ") + WiFi.softAPIP().toString());
-}
-
-
-void CRMui::wifi_check() {
-  if (wifiCheckConnect) {
-    if (wifiMulti.run() == WL_CONNECTED) {      //if (WiFi.status() == WL_CONNECTED) {
-      wifiCheckConnect = false;
-      led(0);
-      Serial.println(String(F("\nПодключение к WiFi сети выполнено!\nIP адрес устройства: ")) + WiFi.localIP().toString());
-    } else {
-      Serial.print(F("."));
-      if (millis() > WTConTimer) wifi_ap();
-    }
-  }
+  Serial.println(String(F("\nЗапуск Wi-Fi в режиме AP: ")) + param(F("AP_SSID")));
 }
 
 
@@ -37,7 +20,6 @@ void CRMui::wifi_start() {
   String ssid_array = param(F("SSID"));
   String pass_array = param(F("Pass"));
   WiFi.persistent(false);
-  wifiCheckConnect = true;
 
   if (wfm == F("STA") || wfm == F("AP_STA")) {
     if (wfm == F("AP_STA")) {
@@ -51,13 +33,13 @@ void CRMui::wifi_start() {
     while (toSSID != -1) {
       String ssid_vol = "", pass_vol = "";
 
-      toSSID = ssid_array.indexOf(",", fromSSID);
+      toSSID = ssid_array.indexOf(F(","), fromSSID);
       if (toSSID != -1) {
         ssid_vol = ssid_array.substring(fromSSID, toSSID);
         fromSSID = toSSID + 1;
       } else ssid_vol = ssid_array.substring(fromSSID);
 
-      toPASS = pass_array.indexOf(",", fromPASS);
+      toPASS = pass_array.indexOf(F(","), fromPASS);
       if (toPASS > 0 || fromPASS <= pass_array.length() - 1) {
         pass_vol = pass_array.substring(fromPASS, toPASS);
         if (toPASS > 0) fromPASS = toPASS + 1;
@@ -67,8 +49,29 @@ void CRMui::wifi_start() {
       Serial.print(F("\t")); Serial.print(ssid_vol);
       if (ssid_vol != "") wifiMulti.addAP(ssid_vol.c_str(), pass_vol.c_str());
     }
-    WTConTimer = millis() + param(F("WTCon")).toInt() * 1000UL;
-    wifiMulti.run();
+    Serial.println();
+    uint32_t connTimer, WTCon = millis() + param(F("WTCon")).toInt() * 1000UL;
+    while (true) {
+      if (useled) {
+        digitalWrite(PIN_LED, !digitalRead(PIN_LED));
+        delay(100);
+        digitalWrite(PIN_LED, !digitalRead(PIN_LED));
+      }
+      if (millis() - connTimer >= 1000) {
+        connTimer = millis();
+        Serial.print(F("."));
+        if (wifiMulti.run() == WL_CONNECTED) {
+          Serial.println(String(F("\nПодключение к WiFi сети выполнено!\nIP адрес устройства: ")) + WiFi.localIP().toString());
+          break;
+        }
+        if (millis() > WTCon) {
+          WiFi.mode(WIFI_OFF);
+          wifi_ap();
+          break;
+        }
+      }
+      delay(100);
+    }
   } else wifi_ap();
 }
 
