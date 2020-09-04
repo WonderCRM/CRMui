@@ -8,6 +8,7 @@
 #ifdef ESP8266
 #include <ESP8266WiFiMulti.h>
 #else
+#define FORMAT_SPIFFS_IF_FAILED true
 #include "SPIFFS.h"
 #include <WiFiMulti.h>
 #endif
@@ -26,13 +27,11 @@ class CRMui {
     void led_use(bool use);
     void led(int wmode);
     void wifi_page();
-    void aliveData_tabl (String id, String value);
-    void aliveData_tabl (String id, String value, String rgb);
+    void aliveData_tabl (String id, String value, String rgb = "");
     String time_work();
     String param(String key);
     String param_get(String key);
-    void getResponse(String resp);
-    void getResponse(String resp, bool torus);
+    void getResponse(String resp, bool torus = false);
     String utf_to_rus(String source);
     void reboot();
     void reset_cfg();
@@ -51,20 +50,16 @@ class CRMui {
     void date(String id, String label);
     void datetime(String id, String label);
     void email(String id, String label);
-    void range(String id, int min, int max, float step, String label);
-    void range(String id, int min, int max, float step, String label, String units);
+    void range(String id, int min, int max, float step, String label, String units = "");
     void select(String id, String label);
     void option(String label, String value);
     void checkbox(String id, String label);
     void color(String id, String label);
-    void button(String id, String label);
-    void button(String id, String label, bool newline);
+    void button(String id, String label, bool newline = true);
     void textarea(String id, String label);
-    void alive_tabl(String id, String label);
-    void alive_tabl(String id, String label, String value);
+    void alive_tabl(String id, String label, String value = "");
     void hr();
-    void br();
-    void br(String size);
+    void br(String size = "");
 
     uiCallback InterfaceElem;
     void ui(void (*uiFunction) ());
@@ -81,7 +76,6 @@ class CRMui {
   private:
     void wifi_ap();
     void wifi_start();
-    void wifi_check();
     void nonWifiVar();
     void load_cfg();
     void save_cfg();
@@ -92,14 +86,14 @@ class CRMui {
     String _getResponse;        //Response for GET
     String buf_alive;           //Callback alive
 
-    bool wifiAPmode, wifiCheckConnect;
+    bool wifiAPmode = false;
     bool AutoSaveSt = false;
-    uint32_t AutoSaveTimer, WTConTimer;
+    uint32_t AutoSaveTimer;
     StaticJsonDocument<4096> cfg;
     String op = "";
     uint8_t mn, pg;
     String btnui = "";
-    uint32_t mainTimer, UpTime;
+    uint32_t UpTime_Timer, UpTime;
     bool needReboot;
 
     //LED
