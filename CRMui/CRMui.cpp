@@ -1,5 +1,5 @@
 #include "CRMui.h"
-#define CRMui_VER "2.0.0901a"
+#define CRMui_VER "2.0.0903a"
 
 
 #include "web/page.html.h"
@@ -17,17 +17,11 @@ uint32_t timer_handle;
 
 void CRMui::var(String key, String value) {
   cfg[key] = value;
-#ifdef DBG
-  Serial.println(String(F("WRITE: ")) + key + F(" = ") + value);
-#endif
 }
 
 
 String CRMui::param(String key) {
   String value = cfg[key];
-#ifdef DBG
-  Serial.println(String(F("READ: ")) + key + F(" = ") + value);
-#endif
   if (value == F("null")) {
     var(key, "");
     return "";
@@ -42,23 +36,12 @@ String CRMui::param_get(String key) {
 }
 
 
-void CRMui::getResponse(String resp) {
-  _getResponse = resp;
-}
 void CRMui::getResponse(String resp, bool torus) {
   if (torus) _getResponse = utf_to_rus(resp);
   else _getResponse = resp;
 }
 
 
-void CRMui::aliveData_tabl (String id, String value) {
-  if (buf_alive == "") buf_alive = F(" {\"");
-  else buf_alive.replace(F("}"), F(",\""));
-  buf_alive += id;
-  buf_alive += F("\":[\"");
-  buf_alive += value;
-  buf_alive += F("\", \"fff\"]}");
-}
 void CRMui::aliveData_tabl (String id, String value, String rgb) {
   if (buf_alive == "") buf_alive = F(" {\"");
   else buf_alive.replace(F("}"), F(",\""));
@@ -67,7 +50,7 @@ void CRMui::aliveData_tabl (String id, String value, String rgb) {
   buf_alive += value;
   buf_alive += F("\", \"");
   rgb.replace(F("#"), F(""));
-  buf_alive += rgb;
+  buf_alive += rgb != "" ? rgb : F("fff");
   buf_alive += F("\"]}");
 }
 
@@ -86,15 +69,25 @@ String CRMui::time_work() {
 
 void CRMui::begin() {
   Serial.println(String(F("\nCRMui WebFramework ver:")) + String(CRMui_VER));
-  
-  SPIFFS.begin();
+
+#ifdef ESP8266
+  if (!SPIFFS.begin()) {
+#else
+  if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED)) {
+#endif
+    Serial.println(F("Ошибка монтирования SPIFFS"));
+    return;
+  }
+
+
   nonWifiVar();
   load_cfg();
-  wifi_start();
 
   String config;
   serializeJson(cfg, config);
-  Serial.println(String(F("\nCONFIG: ")) + config);
+  Serial.println(String(F("CONFIG: ")) + config);
+
+  wifi_start();
 
   server.on("/post", HTTP_POST, [this](AsyncWebServerRequest * request) {
     uint8_t params = request->params();
@@ -134,9 +127,6 @@ void CRMui::begin() {
     InterfaceElem();
     request->send_P(200, F("text/plain"), buf.c_str());
     buf = "";
-#ifdef DBG
-    Serial.println(String(F("RAM ECHO: ")) + String(ESP.getFreeHeap()));
-#endif
   });
 
   server.on("/alive", HTTP_GET, [this](AsyncWebServerRequest * request) {
@@ -144,7 +134,6 @@ void CRMui::begin() {
     request->send_P(200, F("text/plain"), buf_alive.c_str());
     buf_alive = "";
   });
-
 
   server.on("/", HTTP_ANY, [](AsyncWebServerRequest * request) {
     AsyncWebServerResponse *response = request->beginResponse_P(200, F("text/html"), page_html, page_html_size);
@@ -189,7 +178,7 @@ void CRMui::begin() {
   });
 
   server.on("/update", HTTP_POST, [](AsyncWebServerRequest * request) {
-    AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", !Update.hasError() ? "UPDATE SUCCESS!" : "UPDATE FAILED!");
+    AsyncWebServerResponse *response = request->beginResponse(200, F("text/plain"), !Update.hasError() ? F("UPDATE SUCCESS!") : F("UPDATE FAILED!"));
     response->addHeader(F("Connection"), F("close"));
     request->send(response);
   }, [this](AsyncWebServerRequest * request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
@@ -228,13 +217,12 @@ void CRMui::begin() {
 void CRMui::handle() {
   ArduinoOTA.handle();
 
-  wifiCheckConnect ? led(100) : led(-1);
+  led(-1);
 
-  if (millis() - mainTimer >= 1000) {
-    mainTimer = millis();
+  if (millis() - UpTime_Timer >= 1000) {
+    UpTime_Timer = millis();
     UpTime++;
     autosave();
-    wifi_check();
     if (needReboot) reboot();
   }
 }
