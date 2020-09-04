@@ -30,11 +30,7 @@ void CRMui::led(int wmode) {
           }
         }
       }
-    }
-
-    else
-
-    {
+    } else {
       if (wmode == 0) digitalWrite(PIN_LED, (inv ? HIGH : LOW));
       else if (wmode == 1) digitalWrite(PIN_LED, (inv ? LOW : HIGH));
       else if (wmode > 1) {
