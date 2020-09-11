@@ -23,6 +23,7 @@ class CRMui {
 
   public:
     void var(String key, String value);
+    void wifi_start();
     void led_conf(byte pin, bool vol, bool inversion);
     void led_use(bool use);
     void led(int wmode);
@@ -75,7 +76,6 @@ class CRMui {
 
   private:
     void wifi_ap();
-    void wifi_start();
     void nonWifiVar();
     void load_cfg();
     void save_cfg();
