@@ -1,5 +1,5 @@
 #include "CRMui.h"
-#define CRMui_VER "2.0.0903a"
+#define CRMui_VER F("2.0.1009a")
 
 
 #include "web/page.html.h"
@@ -17,11 +17,26 @@ uint32_t timer_handle;
 
 void CRMui::var(String key, String value) {
   cfg[key] = value;
+#ifdef DBG
+  Serial.println(String(F("WRITE: ")) + key + F(" = ") + value);
+#endif
+}
+
+
+void CRMui::setWebAut(String login, String pass) {
+  if (login != "") {
+    WebAutLogin = login;
+    WebAutPass = pass;
+    AutStatus = true;
+  } else AutStatus = false;
 }
 
 
 String CRMui::param(String key) {
   String value = cfg[key];
+#ifdef DBG
+  Serial.println(String(F("READ: ")) + key + F(" = ") + value);
+#endif
   if (value == F("null")) {
     var(key, "");
     return "";
@@ -67,8 +82,13 @@ String CRMui::time_work() {
 }
 
 
+void notFound(AsyncWebServerRequest *request) {
+  request->send(404, F("text/plain"), F("Not found"));
+}
+
+
 void CRMui::begin() {
-  Serial.println(String(F("\nCRMui WebFramework ver:")) + String(CRMui_VER));
+  Serial.println(String(F("\nCRMui WebFramework ver:")) + CRMui_VER);
 
 #ifdef ESP8266
   if (!SPIFFS.begin()) {
@@ -78,7 +98,6 @@ void CRMui::begin() {
     Serial.println(F("Ошибка монтирования SPIFFS"));
     return;
   }
-
 
   nonWifiVar();
   load_cfg();
@@ -90,6 +109,7 @@ void CRMui::begin() {
   wifi_start();
 
   server.on("/post", HTTP_POST, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     uint8_t params = request->params();
     AsyncWebParameter *p;
     for (uint8_t i = 0; i < params; i++) {
@@ -106,6 +126,7 @@ void CRMui::begin() {
   });
 
   server.on("/data", HTTP_GET, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     uint32_t LeadTime = micros();
     uint8_t params = request->params();
     if (params) {
@@ -124,60 +145,72 @@ void CRMui::begin() {
   });
 
   server.on("/echo", HTTP_GET, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     InterfaceElem();
     request->send_P(200, F("text/plain"), buf.c_str());
     buf = "";
   });
 
   server.on("/alive", HTTP_GET, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     update_alive();
     request->send_P(200, F("text/plain"), buf_alive.c_str());
     buf_alive = "";
   });
 
-  server.on("/", HTTP_ANY, [](AsyncWebServerRequest * request) {
+
+  server.on("/", HTTP_ANY, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     AsyncWebServerResponse *response = request->beginResponse_P(200, F("text/html"), page_html, page_html_size);
     response->addHeader(F("Content-Encoding"), F("gzip"));
     request->send(response);
   });
 
-  server.on("/update", HTTP_GET, [](AsyncWebServerRequest * request) {
+
+  server.on("/update", HTTP_GET, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     AsyncWebServerResponse *response = request->beginResponse_P(200, F("text/html"), update_html, update_html_size);
     response->addHeader(F("Content-Encoding"), F("gzip"));
     request->send(response);
   });
 
-  server.on("/js/maker.js", HTTP_GET, [](AsyncWebServerRequest * request) {
+  server.on("/js/maker.js", HTTP_GET, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     AsyncWebServerResponse *response = request->beginResponse_P(200, F("application/javascript"), maker_js, maker_js_size);
     response->addHeader(F("Content-Encoding"), F("gzip"));
     request->send(response);
   });
 
-  server.on("/js/ui.js", HTTP_GET, [](AsyncWebServerRequest * request) {
+  server.on("/js/ui.js", HTTP_GET, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     AsyncWebServerResponse *response = request->beginResponse_P(200, F("application/javascript"), ui_js, ui_js_size);
     response->addHeader(F("Content-Encoding"), F("gzip"));
     request->send(response);
   });
 
-  server.on("/css/chkbx.css", HTTP_GET, [](AsyncWebServerRequest * request) {
+  server.on("/css/chkbx.css", HTTP_GET, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     AsyncWebServerResponse *response = request->beginResponse_P(200, F("text/css"), chkbx_css, chkbx_css_size);
     response->addHeader(F("Content-Encoding"), F("gzip"));
     request->send(response);
   });
 
-  server.on("/css/main.css", HTTP_GET, [](AsyncWebServerRequest * request) {
+  server.on("/css/main.css", HTTP_GET, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     AsyncWebServerResponse *response = request->beginResponse_P(200, F("text/css"), main_css, main_css_size);
     response->addHeader(F("Content-Encoding"), F("gzip"));
     request->send(response);
   });
 
-  server.on("/css/pure-min.css", HTTP_GET, [](AsyncWebServerRequest * request) {
+  server.on("/css/pure-min.css", HTTP_GET, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     AsyncWebServerResponse *response = request->beginResponse_P(200, F("text/css"), puremin_css, puremin_css_size);
     response->addHeader(F("Content-Encoding"), F("gzip"));
     request->send(response);
   });
 
-  server.on("/update", HTTP_POST, [](AsyncWebServerRequest * request) {
+  server.on("/update", HTTP_POST, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     AsyncWebServerResponse *response = request->beginResponse(200, F("text/plain"), !Update.hasError() ? F("UPDATE SUCCESS!") : F("UPDATE FAILED!"));
     response->addHeader(F("Connection"), F("close"));
     request->send(response);
@@ -198,17 +231,22 @@ void CRMui::begin() {
     }
   });
 
-  server.on("/favicon.ico", HTTP_GET, [](AsyncWebServerRequest * request) {
+  server.on("/logout", HTTP_GET, [this](AsyncWebServerRequest * request) {
+    request->send(401);
+  });
+
+  server.on("/favicon.ico", HTTP_GET, [this](AsyncWebServerRequest * request) {
+    if (AutStatus && !request->authenticate(WebAutLogin.c_str(), WebAutPass.c_str())) return request->requestAuthentication();
     AsyncWebServerResponse *response = request->beginResponse_P(200, F("image/x-icon"), favicon_ico, favicon_ico_size);
     request->send(response);
   });
+
+  server.onNotFound(notFound);
 
   server.begin();
 
   ArduinoOTA.setHostname(param(F("AP_SSID")).c_str());
   ArduinoOTA.begin();
-
-  Serial.println(String(F("CRMui RUNING\tFree RAM: ")) + String(ESP.getFreeHeap()));
 
   UpTime = millis() / 1000;
 }
