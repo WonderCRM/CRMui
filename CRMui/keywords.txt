@@ -48,3 +48,5 @@ getRequest	KEYWORD2
 aliveArray			KEYWORD2
 param_get				KEYWORD2
 getResponse			KEYWORD2
+utf_to_rus			KEYWORD2
+setWebAut			KEYWORD2
