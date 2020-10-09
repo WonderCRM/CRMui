@@ -22,8 +22,8 @@ class CRMui {
     typedef void (*updateCallback) ();
 
   public:
+    void setWebAut(String login, String pass = "");
     void var(String key, String value);
-    void wifi_start();
     void led_conf(byte pin, bool vol, bool inversion);
     void led_use(bool use);
     void led(int wmode);
@@ -76,6 +76,7 @@ class CRMui {
 
   private:
     void wifi_ap();
+    void wifi_start();
     void nonWifiVar();
     void load_cfg();
     void save_cfg();
@@ -86,6 +87,8 @@ class CRMui {
     String _getResponse;        //Response for GET
     String buf_alive;           //Callback alive
 
+    bool AutStatus;
+    String WebAutLogin, WebAutPass;
     bool wifiAPmode = false;
     bool AutoSaveSt = false;
     uint32_t AutoSaveTimer;
