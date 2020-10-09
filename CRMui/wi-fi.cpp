@@ -61,7 +61,7 @@ void CRMui::wifi_start() {
         connTimer = millis();
         Serial.print(F("."));
         if (wifiMulti.run() == WL_CONNECTED) {
-          Serial.println(String(F("\nПодключение к WiFi сети выполнено!\nIP адрес устройства: ")) + WiFi.localIP().toString());
+          Serial.println(String(F("\nПодключение к WiFi сети ")) + WiFi.SSID().c_str() + F(" выполнено!\nIP адрес устройства: ") + WiFi.localIP().toString());
           break;
         }
         if (millis() > WTCon) {
