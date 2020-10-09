@@ -29,6 +29,11 @@ void CRMui::getRequest(void (*getFunction) ()) {
 void CRMui::app_name(String name) {
   mn = pg = 0;
   buf = String(F("{\"app_name\":\"")) + name + F("\",");
+  if (AutStatus) {
+    buf += F("\"A\":\"");
+    buf += AutStatus;
+    buf += F("\",");
+  }
 }
 
 void CRMui::text(String id, String label) {
@@ -179,6 +184,15 @@ void CRMui::hr() {
 }
 
 void CRMui::menu(String name) {
+  if (buf == "") {
+    mn = pg = 0;
+    buf = F("{\"app_name\":\"CRMui\",");
+    if (AutStatus) {
+      buf += F("\"A\":\"");
+      buf += AutStatus;
+      buf += F("\",");
+    }
+  }
   if (mn == 0) buf += F("\"menu\":[");
   else {
     int lastIndex = buf.length() - 1;
