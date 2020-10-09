@@ -1,4 +1,4 @@
-#include <CRMui.h>
+#include "CRMui.h"
 
 #define LED 2     //Светодиод на плате, муляж устройства.
 
@@ -10,17 +10,19 @@ bool checkbox_1;
 void setup() {
   Serial.begin(115200);
 
-  crm.led_conf(LED, LOW, true);               //LED индикация (GPIO, Начальное значение, Инверсия значения)
+  crm.led_conf(LED, LOW, true);               //LED индикация (Порт, Начальное значение, Инверсия значения)
 
   //СИСТЕМНЫЕ ПЕРЕМЕННЫЕ, ID - CONST. При отсутствии создаются автоматом с дефолтными параметрами.
-  crm.var(F("mWiFi"), F("STA"));             //Режим по умолчанию, (STA, AP, AP_STA).
-  crm.var(F("SSID"), F("_1_,_2_"));              //Имя сети к которой подключаемся. Если не задан запускается режим AP. Поддержка более одной ТД для подключения (указать через запятую).
-  crm.var(F("Pass"), F("_1_,_2_"));              //Пароль от подключаемой сети. Поддержка более одной ТД для подключения (указать через запятую).
+  crm.var(F("mWiFi"), F("AP"));             //Режим по умолчанию, (STA, AP, AP_STA).
+  crm.var(F("SSID"), F("___"));              //Имя сети к которой подключаемся. Если не задан запускается режим AP.
+  crm.var(F("Pass"), F("___"));         //Пароль от подключаемой сети.
   crm.var(F("WTCon"), F("120"));             //Время ожидания подключения к WiFi, сек.
   crm.var(F("AP_SSID"), F("CRMui"));         //Имя точки доступа, она же идентификатор для OTA.
   crm.var(F("AP_Pass"), F(""));              //Пароль точки доступа.
 
   //ПОЛЬЗОВАТЕЛЬСКИЕ ПЕРЕМЕННЫЕ
+  crm.var(F("HAU"), F("admin"));
+  crm.var(F("HAP"), F("admin"));
   crm.var(F("TEXT"), F("Текст текст текст"));
   crm.var(F("password_input"), F("Pass-1234"));
   crm.var(F("number_input"), F("5645454"));
@@ -36,19 +38,22 @@ void setup() {
 
 
   //ОБЯЗАТЕЛЬНЫЕ МЕТОДЫ
-  crm.ui(interface);          //Интерфейс UI.
-  crm.update(update_vol);     //Вызывается при обновлении параметров через Web
-  crm.getRequest(dataReq);    //GET запросы. Вида:   http://IP/data?text=Тестовое сообщение
+  crm.ui(interface);          //Интерфейс UI. Обязательно
+  crm.getRequest(dataReq);    //GET запросы. Вида:   http://IP/data?ПЕРЕМЕННАЯ=ЗНАЧЕНИЕ&П2=З2 и т.д.
   crm.aliveArray(adata);      //Динамические данные на странице. Обязательно
+  crm.update(update_vol);      //Выполнение функции, при обновлении переменных через Web
   crm.begin();                //Старт Фреймворка
+
   update_vol();
 }
 
 
+//Выполнение при обновлении переменных через Web
 void update_vol() {
   checkbox_1 = crm.param(F("checkbox_1")) == F("true") ? true : false;
+  crm.setWebAut(crm.param(F("HAU")), crm.param(F("HAP")));    //Авторизация в Web интерфейсе
   Serial.println(String(F("Использовать подсветку: ")) + (checkbox_1 ? F("ДА") : F("НЕТ")));
-  Serial.println(F("Параметры обновлены"));
+  Serial.println("Обновление переменных");
 }
 
 
@@ -57,23 +62,27 @@ void loop() {
   crm.btnCallback(F("btn_print"), test_print);
   crm.btnCallback(F("btn_invert"), test_invert);
   crm.btnCallback(F("btn_reboot"), rbt);
+  crm.btnCallback(F("btn_reset"), rst);
 }
 
 
 //Обработка GET запроса
 void dataReq() {
-  Serial.println(crm.param_get("text"));  //Вывод в терминал значения переменной "text", для запроса: http://IP/data?text=Тестовое сообщение
-  crm.getResponse(String(millis()));      //Возврат ответа в Web
+  Serial.println(crm.param_get(F("text")));  //Вывод в терминал значения переменной "text", для запроса: http://IP/data?text=Тестовое сообщение
+
+  //Возврат ответа в Web
+  if (crm.param_get(F("stat")) != F("null")) crm.getResponse(crm.time_work());
+  else crm.getResponse(String(millis()));
 }
 
 
 void interface() {
-  crm.app_name("Проект-15");          //Название устройства, отображается в меню.
+  crm.app_name("Проект-15");         //Название устройства/проекта, отображается в меню.
 
   //Разделы меню
   crm.menu(F("Главная"));             //Пункт 1
   crm.menu(F("Настройки"));           //Пункт 2
-  crm.menu(F("WiFi"));                //Пункт 3
+  crm.menu(F("WiFi"));      //Пункт 3
   crm.page();
 
   //Соответствует 1 пунку меню
@@ -109,6 +118,10 @@ void interface() {
   crm.checkbox(F("checkbox_3"), F("Использовать LED индикацию"));
   crm.br();     //Строчный интервал, размер в пикселях. По умолчанию = 10
   crm.textarea(F("textarea_input"), F("Текстовое поле для большого ввода текста прямо в него"));
+  crm.hr();
+  crm.text(F("HAU"), F("WEB LOGIN"));
+  crm.password(F("HAP"), F("WEB PASSWORD"));
+  crm.button(F("btn_reset"), F("Reset settings"));
   crm.page();
 
   //Соответствует 3 пунку меню
@@ -134,6 +147,10 @@ void adata() {
 
 void rbt() {
   crm.reboot();       // Перезагрузка ESP
+}
+
+void rst() {
+  crm.reset_cfg();       // Перезагрузка ESP
 }
 
 
