@@ -27,6 +27,7 @@ class CRMui {
     void led_conf(byte pin, bool vol, bool inversion);
     void led_use(bool use);
     void led(int wmode);
+    void wifi_start();
     void wifi_page();
     void aliveData_tabl (String id, String value, String rgb = "");
     String time_work();
@@ -76,7 +77,6 @@ class CRMui {
 
   private:
     void wifi_ap();
-    void wifi_start();
     void nonWifiVar();
     void load_cfg();
     void save_cfg();
