@@ -50,7 +50,7 @@ void CRMui::wifi_start() {
       if (ssid_vol != "") wifiMulti.addAP(ssid_vol.c_str(), pass_vol.c_str());
     }
     Serial.println();
-    uint32_t connTimer, WTCon = millis() + param(F("WTCon")).toInt() * 1000UL;
+    uint32_t connTimer = 0, WTCon = millis() + param(F("WTCon")).toInt() * 1000UL;
     while (true) {
       if (useled) {
         digitalWrite(PIN_LED, !digitalRead(PIN_LED));
